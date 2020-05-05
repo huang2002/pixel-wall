@@ -1,0 +1,27 @@
+{
+  "name": "pixel-wall",
+  "version": "0.1.0",
+  "description": "A pixel wall designer.",
+  "author": "3h",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "rollup -c",
+    "test": "node dev-server"
+  },
+  "repository": "huang2002/pixel-wall",
+  "keywords": [
+    "pixel",
+    "walldesign",
+    "3h"
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "herver": "^0.4.0",
+    "rollup": "^2.2.0",
+    "rollup-plugin-babel": "^4.3.0",
+    "rollup-plugin-terser": "^5.3.0",
+    "terser": "^4.6.0"
+  }
+}
