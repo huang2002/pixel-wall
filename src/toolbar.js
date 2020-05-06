@@ -30,7 +30,7 @@ export const toolbar = (
         ToolbarButton('Settings', () => {
             const { style: settingsContainerStyle } = settingsContainer;
             settingsContainerStyle.display = (
-                settingsContainerStylep.display === 'none'
+                settingsContainerStyle.display === 'none'
                     ? 'block'
                     : 'none'
             );
