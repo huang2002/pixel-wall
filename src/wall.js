@@ -335,6 +335,6 @@ export const setWallHeight = rows => {
 };
 
 setTimeout(() => { // wait until DOM is ready
-    setWallHeight(16); // init height
-    setWallWidth(16); // init width
+    setWallHeight(DEFAULT_HEIGHT); // init height
+    setWallWidth(DEFAULT_WIDTH); // init width
 });

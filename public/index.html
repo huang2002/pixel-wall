@@ -12,6 +12,16 @@
 </head>
 
 <body>
+    <script type="text/javascript">
+        if (location.href.includes('dev')) {
+            var script = document.createElement('script');
+            script.src="//cdn.jsdelivr.net/npm/eruda";
+            document.body.appendChild(script);
+            script.onload = function () {
+                eruda.init();
+            };
+        }
+    </script>
     <script type="text/javascript" src="./index.js" defer="defer"></script>
 </body>
 
