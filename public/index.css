@@ -83,14 +83,39 @@ body {
     color: #DDD;
     overflow: auto;
     background-color: rgba(0, 0, 0, .5);
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(5px);
 }
 
 #settings-window {
     width: 20em;
     margin: 1em auto;
     text-align: center;
-    background-color: rgba(0, 0, 0, .8);
+    background-color: rgba(0, 0, 0, .6);
     border: solid 1px #000;
-    border-radius: 6px;
+    border-radius: 5px;
+}
+
+.settings-label {
+    display: inline-block;
+    width: 40%;
+    margin: 1em 0 0;
+    padding-right: 1em;
+    text-align: right;
+}
+
+.settings-input {
+    display: inline-block;
+    width: 5em;
+    border-bottom: solid 1px currentColor;
+}
+
+.settings-button {
+    margin: 1em .5em 0;
+    border: solid 1px currentColor;
+    border-radius: 5px;
+}
+
+.settings-input:focus,
+.settings-button:focus {
+    color: #FFF;
 }
