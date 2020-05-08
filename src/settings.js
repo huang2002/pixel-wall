@@ -46,7 +46,7 @@ const SettingsInput = options => (
         type: options.type,
         value: options.init,
         listeners: {
-            input: onInput,
+            input: options.onInput,
         },
     })
 );
@@ -75,7 +75,7 @@ export const settingsContainer = (
             id: 'settings-window',
             action: 'javascript:;',
         }, [
-            SettingsLabel('Width:', 'width'),
+            SettingsLabel('Wall Width:', 'width'),
             SettingsInput({
                 name: 'width',
                 type: 'number',
@@ -95,7 +95,7 @@ export const settingsContainer = (
                 },
             }),
             h('br'),
-            SettingsLabel('Height:', 'height'),
+            SettingsLabel('Wall Height:', 'height'),
             SettingsInput({
                 name: 'height',
                 type: 'number',

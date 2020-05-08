@@ -89,6 +89,7 @@ body {
 #settings-window {
     width: 20em;
     margin: 1em auto;
+    padding: .8em 0;
     text-align: center;
     background-color: rgba(0, 0, 0, .6);
     border: solid 1px #000;
@@ -97,22 +98,29 @@ body {
 
 .settings-label {
     display: inline-block;
-    width: 40%;
-    margin: 1em 0 0;
+    width: 50%;
+    margin: .5em 0;
     padding-right: 1em;
     text-align: right;
+    white-space: nowrap;
 }
 
 .settings-input {
     display: inline-block;
-    width: 5em;
+    width: 6em;
+    text-align: center;
+}
+
+.settings-input[type='number'] {
     border-bottom: solid 1px currentColor;
 }
 
 .settings-button {
-    margin: 1em .5em 0;
+    margin: .5em;
+    padding: 0 1em;
     border: solid 1px currentColor;
     border-radius: 5px;
+    outline: none;
 }
 
 .settings-input:focus,
