@@ -42,3 +42,21 @@ export const h = (tag, attributes, children) => {
     return element;
 
 };
+
+/**
+ * @param {(...args: any[]) => void} callback
+ * @param {number} delay
+ * @returns {typeof callback}
+ */
+export const throttle = (callback, delay) => {
+    /**
+     * @type {any}
+     */
+    let timer = null;
+    return (...args) => {
+        if (timer) {
+            clearTimeout(timer);
+        }
+        timer = setTimeout(callback, delay, ...args);
+    };
+};

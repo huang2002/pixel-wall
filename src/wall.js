@@ -1,5 +1,5 @@
 // @ts-check
-import { h } from './common.js';
+import { h, throttle } from './common.js';
 
 const WALL_CIRCLE_CLASS = 'circle';
 const WALL_RECT_CLASS = 'rect';
@@ -160,9 +160,9 @@ export const wallContainer = (
 export const togglePixelShape = () => {
     wall.setAttribute(
         'class',
-        wall.getAttribute('class') === WALL_CIRCLE_CLASS ?
-        WALL_CIRCLE_CLASS :
-        WALL_RECT_CLASS
+        wall.getAttribute('class') === WALL_CIRCLE_CLASS
+            ? WALL_RECT_CLASS
+            : WALL_CIRCLE_CLASS
     );
 };
 
@@ -240,12 +240,8 @@ const WallCell = () => (
     ])
 );
 
-/**
- * @param {number} rows
- * @param {number} columns
- */
-const adjustWallStyle = (rows, columns) => {
-    const targetRatio = columns / rows;
+const adjustWallStyle = throttle(() => {
+    const targetRatio = currentColumns / currentRows;
     const containerBox = wallContainer.getBoundingClientRect();
     const { width: containerWidth, height: containerHeight } = containerBox;
     const containerRatio = containerWidth / containerHeight;
@@ -271,7 +267,7 @@ const adjustWallStyle = (rows, columns) => {
         y0 = containerBox.top + marginTop;
         w0 = containerWidth / currentColumns;
     }
-};
+}, 500);
 
 window.addEventListener('resize', () => {
     adjustWallStyle(currentRows, currentColumns);
@@ -280,7 +276,7 @@ window.addEventListener('resize', () => {
 /**
  * @param {number} columns
  */
-export const setWallWidth = columns => {
+export const setWallWidth = throttle(columns => {
 
     if (currentColumns < columns) {
         for (let i = 0; i < currentRows; i++) {
@@ -301,14 +297,14 @@ export const setWallWidth = columns => {
     }
     
     currentColumns = columns;
-    adjustWallStyle(currentRows, currentColumns);
+    adjustWallStyle();
 
-};
+}, 500);
 
 /**
  * @param {number} rows
  */
-export const setWallHeight = rows => {
+export const setWallHeight = throttle(rows => {
     
     if (currentRows < rows) {
         const rowTemplate = { length: currentColumns };
@@ -330,9 +326,9 @@ export const setWallHeight = rows => {
     }
 
     currentRows = rows;
-    adjustWallStyle(currentRows, currentColumns);
+    adjustWallStyle();
 
-};
+}, 500);
 
 setTimeout(() => { // wait until DOM is ready
     setWallHeight(DEFAULT_HEIGHT); // init height
