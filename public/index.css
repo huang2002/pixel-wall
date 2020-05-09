@@ -60,6 +60,10 @@ body {
     border-radius: 50%;
 }
 
+.rect .pixel {
+    border-radius: 10%;
+}
+
 #toolbar {
     padding: 0 0 1em;
     text-align: center;
@@ -92,8 +96,9 @@ body {
     padding: .8em 0;
     text-align: center;
     background-color: rgba(0, 0, 0, .6);
-    border: solid 1px #000;
-    border-radius: 5px;
+    border: solid 1px #888;
+    border-radius: 6px;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, .5);
 }
 
 .settings-label {
@@ -109,10 +114,15 @@ body {
     display: inline-block;
     width: 6em;
     text-align: center;
+    outline: none;
 }
 
 .settings-input[type='number'] {
     border-bottom: solid 1px currentColor;
+}
+
+.settings-input:invalid {
+    color: #E00;
 }
 
 .settings-button {
