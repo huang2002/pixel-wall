@@ -113,6 +113,7 @@ body {
     display: inline-block;
     width: 6em;
     text-align: center;
+    outline: none;
 }
 
 .settings-input[type='number'] {
