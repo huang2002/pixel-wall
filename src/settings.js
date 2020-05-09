@@ -128,23 +128,25 @@ export const settingsContainer = (
             SettingsInput({
                 name: 'primary-color',
                 type: 'color',
-                init: DEFAULT_PRIMARY_COLOR,
-                onInput(event) {
+                value: DEFAULT_PRIMARY_COLOR,
+            },
+                event => {
                     // @ts-ignore
                     setPrimaryColor(event.target.value);
                 },
-            }),
+            ),
             h('br'),
             SettingsLabel('Secondary Color:', 'secondary-color'),
             SettingsInput({
                 name: 'secondary-color',
                 type: 'color',
-                init: DEFAULT_SECONDARY_COLOR,
-                onInput(event) {
+                value: DEFAULT_SECONDARY_COLOR,
+            },
+                event => {
                     // @ts-ignore
                     setSecondaryColor(event.target.value);
                 },
-            }),
+            ),
             h('br'),
             SettingsButton('Toggle Shape', togglePixelShape),
             h('br'),
