@@ -7,10 +7,14 @@ const PIXEL_CLASS = 'pixel';
 
 const COLOR_KEY = 'data-color';
 
-const MAX_ACTION_COUNT = 10;
+export const DEFAULT_SECONDARY_COLOR = '#CCCCCC';
+export const DEFAULT_PRIMARY_COLOR = '#CC1144';
 
-let defaultColor = '#CCCCCC';
-let activeColor = '#CC1144';
+export const DEFAULT_WIDTH = 16;
+export const DEFAULT_HEIGHT = 16;
+
+let secondaryColor = DEFAULT_SECONDARY_COLOR;
+let primaryColor = DEFAULT_PRIMARY_COLOR;
 
 let currentColumns = 0;
 let currentRows = 0;
@@ -39,12 +43,12 @@ const checkToggleTarget = target => {
     lastTarget = target;
 
     const { style } = target;
-    if (target.getAttribute(COLOR_KEY) === defaultColor) {
-        style.backgroundColor = activeColor;
-        target.setAttribute(COLOR_KEY, activeColor);
+    if (target.getAttribute(COLOR_KEY) === secondaryColor) {
+        style.backgroundColor = primaryColor;
+        target.setAttribute(COLOR_KEY, primaryColor);
     } else {
-        style.backgroundColor = defaultColor;
-        target.setAttribute(COLOR_KEY, defaultColor);
+        style.backgroundColor = secondaryColor;
+        target.setAttribute(COLOR_KEY, secondaryColor);
     }
 
 };
@@ -70,82 +74,83 @@ export const wallContainer = (
         id: 'wall-container',
         listeners: (
             navigator.maxTouchPoints // > 0
-                ? {
+            ?
+            {
+                /**
+                 * @param {TouchEvent} event
+                 */
+                touchstart(event) {
+                    isPressing = true;
+                    // @ts-ignore
+                    checkToggleTarget(event.target);
+                },
+                /**
+                 * @param {TouchEvent} event
+                 */
+                _touchmove(event) {
+                    event.preventDefault();
+                    if (!isPressing) {
+                        return;
+                    }
                     /**
-                     * @param {TouchEvent} event
+                     * HACK: touch event targets are
+                     * fixed, so a simple target
+                     * detection is implemented here
                      */
-                    touchstart(event) {
-                        isPressing = true;
+                    const point = event.changedTouches[0];
+                    const { clientX: x, clientY: y } = point;
+                    if (x < x0 || y < y0) {
+                        return;
+                    }
+                    const i = Math.floor((x - x0) / w0);
+                    const j = Math.floor((y - y0) / w0);
+                    if (
+                        i >= currentColumns ||
+                        j >= currentRows ||
+                        (
+                            ((x - x0 - (i + .5) * w0) ** 2 +
+                                (y - y0 - (j + .5) * w0) ** 2) >
+                            (w0 / 2) ** 2
+                        )
+                    ) {
+                        return;
+                    }
+                    checkToggleTarget(
                         // @ts-ignore
-                        checkToggleTarget(event.target);
-                    },
-                    /**
-                     * @param {TouchEvent} event
-                     */
-                    _touchmove(event) {
-                        event.preventDefault();
-                        if (!isPressing) {
-                            return;
-                        }
-                        /**
-                         * HACK: touch event targets are
-                         * fixed, so a simple target
-                         * detection is implemented here
-                         */
-                        const point = event.changedTouches[0];
-                        const { clientX: x, clientY: y } = point;
-                        if (x < x0 || y < y0) {
-                            return;
-                        }
-                        const i = Math.floor((x - x0) / w0);
-                        const j = Math.floor((y - y0) / w0);
-                        if (
-                            i >= currentColumns
-                            || j >= currentRows
-                            || (
-                                ((x - x0 - (i + .5) * w0) ** 2
-                                    + (y - y0 - (j + .5) * w0) ** 2)
-                                > (w0 / 2) ** 2
-                            )
-                        ) {
-                            return;
-                        }
-                        checkToggleTarget(
-                            // @ts-ignore
-                            wall.childNodes[j] // row
-                                .childNodes[i] // cell
-                                .childNodes[0] // pixel
-                        );
-                    },
-                    touchend() {
-                        isPressing = false;
-                        lastTarget = null;
-                    },
-                }
-                : {
-                    /**
-                     * @param {MouseEvent} event
-                     */
-                    mousedown(event) {
-                        isPressing = true;
-                        // @ts-ignore
-                        checkToggleTarget(event.target);
-                    },
-                    /**
-                     * @param {MouseEvent} event
-                     */
-                    mousemove(event) {
-                        if (!isPressing) {
-                            return;
-                        }
-                        // @ts-ignore
-                        checkToggleTarget(event.target);
-                    },
-                    mouseup() {
-                        isPressing = false;
-                        lastTarget = null;
-                    },
-                }
+                        wall.childNodes[j] // row
+                        .childNodes[i] // cell
+                        .childNodes[0] // pixel
+                    );
+                },
+                touchend() {
+                    isPressing = false;
+                    lastTarget = null;
+                },
+            } :
+            {
+                /**
+                 * @param {MouseEvent} event
+                 */
+                mousedown(event) {
+                    isPressing = true;
+                    // @ts-ignore
+                    checkToggleTarget(event.target);
+                },
+                /**
+                 * @param {MouseEvent} event
+                 */
+                mousemove(event) {
+                    if (!isPressing) {
+                        return;
+                    }
+                    // @ts-ignore
+                    checkToggleTarget(event.target);
+                },
+                mouseup() {
+                    isPressing = false;
+                    lastTarget = null;
+                },
+            }
         ),
     }, [
         wall
@@ -155,16 +160,16 @@ export const wallContainer = (
 export const togglePixelShape = () => {
     wall.setAttribute(
         'class',
-        wall.getAttribute('class') === WALL_CIRCLE_CLASS
-            ? WALL_CIRCLE_CLASS
-            : WALL_RECT_CLASS
+        wall.getAttribute('class') === WALL_CIRCLE_CLASS ?
+        WALL_CIRCLE_CLASS :
+        WALL_RECT_CLASS
     );
 };
 
 /**
  * @param {string} color
  */
-export const setDefaultColor = color => {
+export const setSecondaryColor = color => {
     const rows = wall.childNodes;
     for (let i = 0; i < currentRows; i++) {
         const row = rows[i].childNodes;
@@ -174,19 +179,19 @@ export const setDefaultColor = color => {
              */
             // @ts-ignore
             const pixel = row[j].childNodes[0];
-            if (pixel.getAttribute(COLOR_KEY) === defaultColor) {
+            if (pixel.getAttribute(COLOR_KEY) === secondaryColor) {
                 pixel.style.backgroundColor = color;
                 pixel.setAttribute(COLOR_KEY, color);
             }
         }
     }
-    defaultColor = color;
+    secondaryColor = color;
 };
 
 /**
  * @param {string} color
  */
-export const setActiveColor = color => {
+export const setPrimaryColor = color => {
     const rows = wall.childNodes;
     for (let i = 0; i < currentRows; i++) {
         const row = rows[i].childNodes;
@@ -196,13 +201,13 @@ export const setActiveColor = color => {
              */
             // @ts-ignore
             const pixel = row[j].childNodes[0];
-            if (pixel.getAttribute(COLOR_KEY) === activeColor) {
+            if (pixel.getAttribute(COLOR_KEY) === primaryColor) {
                 pixel.style.backgroundColor = color;
                 pixel.setAttribute(COLOR_KEY, color);
             }
         }
     }
-    activeColor = color;
+    primaryColor = color;
 };
 
 export const resetPixels = () => {
@@ -215,9 +220,9 @@ export const resetPixels = () => {
              */
             // @ts-ignore
             const pixel = row[j].childNodes[0];
-            if (pixel.getAttribute(COLOR_KEY) !== defaultColor) {
-                pixel.style.backgroundColor = defaultColor;
-                pixel.setAttribute(COLOR_KEY, defaultColor);
+            if (pixel.getAttribute(COLOR_KEY) !== secondaryColor) {
+                pixel.style.backgroundColor = secondaryColor;
+                pixel.setAttribute(COLOR_KEY, secondaryColor);
             }
         }
     }
@@ -229,8 +234,8 @@ const WallCell = () => (
     }, [
         h('button', {
             class: PIXEL_CLASS,
-            style: `background-color: ${defaultColor}`,
-            [COLOR_KEY]: defaultColor,
+            style: `background-color: ${secondaryColor}`,
+            [COLOR_KEY]: secondaryColor,
         })
     ])
 );
@@ -273,29 +278,9 @@ window.addEventListener('resize', () => {
 });
 
 /**
- * @param {number} rows
  * @param {number} columns
  */
-export const setWallSize = (rows, columns) => {
-
-    if (currentRows < rows) {
-        const rowTemplate = { length: columns };
-        for (let i = currentRows; i < rows; i++) {
-            wall.appendChild(
-                h('tr', {
-                    class: 'wall-row',
-                },
-                    Array.from(rowTemplate, WallCell)
-                )
-            );
-        }
-    } else if (currentRows > rows) {
-        for (let i = currentRows; i > rows; i--) {
-            wall.removeChild(
-                wall.childNodes[i - 1]
-            );
-        }
-    }
+export const setWallWidth = columns => {
 
     if (currentColumns < columns) {
         for (let i = 0; i < currentRows; i++) {
@@ -314,14 +299,42 @@ export const setWallSize = (rows, columns) => {
             }
         }
     }
+    
+    currentColumns = columns;
+    adjustWallStyle(currentRows, currentColumns);
+
+};
+
+/**
+ * @param {number} rows
+ */
+export const setWallHeight = rows => {
+    
+    if (currentRows < rows) {
+        const rowTemplate = { length: currentColumns };
+        for (let i = currentRows; i < rows; i++) {
+            wall.appendChild(
+                h('tr', {
+                        class: 'wall-row',
+                    },
+                    Array.from(rowTemplate, WallCell)
+                )
+            );
+        }
+    } else if (currentRows > rows) {
+        for (let i = currentRows; i > rows; i--) {
+            wall.removeChild(
+                wall.childNodes[i - 1]
+            );
+        }
+    }
 
     currentRows = rows;
-    currentColumns = columns;
-
-    adjustWallStyle(rows, columns);
+    adjustWallStyle(currentRows, currentColumns);
 
 };
 
 setTimeout(() => { // wait until DOM is ready
-    setWallSize(16, 16); // init
+    setWallHeight(DEFAULT_HEIGHT); // init height
+    setWallWidth(DEFAULT_WIDTH); // init width
 });

@@ -28,13 +28,12 @@ export const toolbar = (
             }
         }),
         ToolbarButton('Settings', () => {
-            alert('Work In Progress');
-            /* const { style: settingsWindowStyle } = settingsContainer;
-            settingsWindowStyle.display = (
-                settingsWindowStyle.display === 'none'
+            const { style: settingsContainerStyle } = settingsContainer;
+            settingsContainerStyle.display = (
+                settingsContainerStyle.display === 'none'
                     ? 'block'
                     : 'none'
-            ); */
+            );
         }),
     ])
 );
