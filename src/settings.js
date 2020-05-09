@@ -12,6 +12,8 @@ import {
     togglePixelShape,
 } from './wall.js';
 
+const MIN_WIDTH = 1;
+const MIN_HEIGHT = 1;
 const MAX_WIDTH = 50;
 const MAX_HEIGHT = 50;
 
@@ -29,24 +31,15 @@ export const SettingsLabel = (text, target) => (
 );
 
 /**
- * @typedef SettingsInputOptions
- * @property {string} name
- * @property {string} type
- * @property {string} init
- * @property {(event: InputEvent) => void} onInput
+ * @param {object} props
+ * @param {(event: InputEvent) => void} onInput
  */
-
-/**
- * @param {SettingsInputOptions} options
- */
-const SettingsInput = options => (
+const SettingsInput = (props, onInput) => (
     h('input', {
+        ...props,
         class: 'settings-input',
-        name: options.name,
-        type: options.type,
-        value: options.init,
         listeners: {
-            input: options.onInput,
+            input: onInput,
         },
     })
 );
@@ -79,8 +72,12 @@ export const settingsContainer = (
             SettingsInput({
                 name: 'width',
                 type: 'number',
-                init: '' + DEFAULT_WIDTH,
-                onInput(event) {
+                min: '' + MIN_WIDTH,
+                max: '' + MAX_WIDTH,
+                step: '1',
+                value: '' + DEFAULT_WIDTH,
+            },
+                event => {
                     /**
                      * @type {HTMLInputElement}
                      */
@@ -89,18 +86,26 @@ export const settingsContainer = (
                     const width = +target.value;
                     if (width > MAX_WIDTH) {
                         target.value = '' + MAX_WIDTH;
+                        setWallHeight(MAX_WIDTH);
+                    } else if (width < MIN_WIDTH) {
+                        target.value = '' + MIN_WIDTH;
+                        setWallHeight(MIN_WIDTH);
                     } else {
-                        setWallWidth(width);
+                        setWallHeight(width);
                     }
-                },
-            }),
+                }
+            ),
             h('br'),
             SettingsLabel('Wall Height:', 'height'),
             SettingsInput({
                 name: 'height',
                 type: 'number',
-                init: '' + DEFAULT_HEIGHT,
-                onInput(event) {
+                min: '' + MIN_HEIGHT,
+                max: '' + MAX_HEIGHT,
+                step: '1',
+                value: '' + DEFAULT_HEIGHT,
+            },
+                event => {
                     /**
                      * @type {HTMLInputElement}
                      */
@@ -109,11 +114,15 @@ export const settingsContainer = (
                     const height = +target.value;
                     if (height > MAX_HEIGHT) {
                         target.value = '' + MAX_HEIGHT;
+                        setWallHeight(MAX_HEIGHT);
+                    } else if (height < MIN_HEIGHT) {
+                        target.value = '' + MIN_HEIGHT;
+                        setWallHeight(MIN_HEIGHT);
                     } else {
                         setWallHeight(height);
                     }
-                },
-            }),
+                }
+            ),
             h('br'),
             SettingsLabel('Primary Color:', 'primary-color'),
             SettingsInput({
