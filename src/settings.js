@@ -86,12 +86,12 @@ export const settingsContainer = (
                     const width = +target.value;
                     if (width > MAX_WIDTH) {
                         target.value = '' + MAX_WIDTH;
-                        setWallHeight(MAX_WIDTH);
+                        setWallWidth(MAX_WIDTH);
                     } else if (width < MIN_WIDTH) {
                         target.value = '' + MIN_WIDTH;
-                        setWallHeight(MIN_WIDTH);
+                        setWallWidth(MIN_WIDTH);
                     } else {
-                        setWallHeight(width);
+                        setWallWidth(width);
                     }
                 }
             ),
