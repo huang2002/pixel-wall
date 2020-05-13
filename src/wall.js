@@ -74,83 +74,83 @@ export const wallContainer = (
         id: 'wall-container',
         listeners: (
             navigator.maxTouchPoints // > 0
-            ?
-            {
-                /**
-                 * @param {TouchEvent} event
-                 */
-                touchstart(event) {
-                    isPressing = true;
-                    // @ts-ignore
-                    checkToggleTarget(event.target);
-                },
-                /**
-                 * @param {TouchEvent} event
-                 */
-                _touchmove(event) {
-                    event.preventDefault();
-                    if (!isPressing) {
-                        return;
-                    }
+                ?
+                {
                     /**
-                     * HACK: touch event targets are
-                     * fixed, so a simple target
-                     * detection is implemented here
+                     * @param {TouchEvent} event
                      */
-                    const point = event.changedTouches[0];
-                    const { clientX: x, clientY: y } = point;
-                    if (x < x0 || y < y0) {
-                        return;
-                    }
-                    const i = Math.floor((x - x0) / w0);
-                    const j = Math.floor((y - y0) / w0);
-                    if (
-                        i >= currentColumns ||
-                        j >= currentRows ||
-                        (
-                            ((x - x0 - (i + .5) * w0) ** 2 +
-                                (y - y0 - (j + .5) * w0) ** 2) >
-                            (w0 / 2) ** 2
-                        )
-                    ) {
-                        return;
-                    }
-                    checkToggleTarget(
+                    touchstart(event) {
+                        isPressing = true;
                         // @ts-ignore
-                        wall.childNodes[j] // row
-                        .childNodes[i] // cell
-                        .childNodes[0] // pixel
-                    );
-                },
-                touchend() {
-                    isPressing = false;
-                    lastTarget = null;
-                },
-            } :
-            {
-                /**
-                 * @param {MouseEvent} event
-                 */
-                mousedown(event) {
-                    isPressing = true;
-                    // @ts-ignore
-                    checkToggleTarget(event.target);
-                },
-                /**
-                 * @param {MouseEvent} event
-                 */
-                mousemove(event) {
-                    if (!isPressing) {
-                        return;
-                    }
-                    // @ts-ignore
-                    checkToggleTarget(event.target);
-                },
-                mouseup() {
-                    isPressing = false;
-                    lastTarget = null;
-                },
-            }
+                        checkToggleTarget(event.target);
+                    },
+                    /**
+                     * @param {TouchEvent} event
+                     */
+                    _touchmove(event) {
+                        event.preventDefault();
+                        if (!isPressing) {
+                            return;
+                        }
+                        /**
+                         * HACK: touch event targets are
+                         * fixed, so a simple target
+                         * detection is implemented here
+                         */
+                        const point = event.changedTouches[0];
+                        const { clientX: x, clientY: y } = point;
+                        if (x < x0 || y < y0) {
+                            return;
+                        }
+                        const i = Math.floor((x - x0) / w0);
+                        const j = Math.floor((y - y0) / w0);
+                        if (
+                            i >= currentColumns ||
+                            j >= currentRows ||
+                            (
+                                ((x - x0 - (i + .5) * w0) ** 2 +
+                                    (y - y0 - (j + .5) * w0) ** 2) >
+                                (w0 / 2) ** 2
+                            )
+                        ) {
+                            return;
+                        }
+                        checkToggleTarget(
+                            // @ts-ignore
+                            wall.childNodes[j] // row
+                                .childNodes[i] // cell
+                                .childNodes[0] // pixel
+                        );
+                    },
+                    touchend() {
+                        isPressing = false;
+                        lastTarget = null;
+                    },
+                } :
+                {
+                    /**
+                     * @param {MouseEvent} event
+                     */
+                    mousedown(event) {
+                        isPressing = true;
+                        // @ts-ignore
+                        checkToggleTarget(event.target);
+                    },
+                    /**
+                     * @param {MouseEvent} event
+                     */
+                    mousemove(event) {
+                        if (!isPressing) {
+                            return;
+                        }
+                        // @ts-ignore
+                        checkToggleTarget(event.target);
+                    },
+                    mouseup() {
+                        isPressing = false;
+                        lastTarget = null;
+                    },
+                }
         ),
     }, [
         wall
@@ -270,7 +270,7 @@ const adjustWallStyle = throttle(() => {
 }, 500);
 
 window.addEventListener('resize', () => {
-    adjustWallStyle(currentRows, currentColumns);
+    adjustWallStyle();
 });
 
 /**
@@ -295,7 +295,7 @@ export const setWallWidth = throttle(columns => {
             }
         }
     }
-    
+
     currentColumns = columns;
     adjustWallStyle();
 
@@ -305,14 +305,14 @@ export const setWallWidth = throttle(columns => {
  * @param {number} rows
  */
 export const setWallHeight = throttle(rows => {
-    
+
     if (currentRows < rows) {
         const rowTemplate = { length: currentColumns };
         for (let i = currentRows; i < rows; i++) {
             wall.appendChild(
                 h('tr', {
-                        class: 'wall-row',
-                    },
+                    class: 'wall-row',
+                },
                     Array.from(rowTemplate, WallCell)
                 )
             );

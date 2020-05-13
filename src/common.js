@@ -44,15 +44,14 @@ export const h = (tag, attributes, children) => {
 };
 
 /**
- * @param {(...args: any[]) => void} callback
- * @param {number} delay
- * @returns {typeof callback}
+ * @type {<T extends (...args: any[]) => void>(callback: T, delay: number) => T}
  */
 export const throttle = (callback, delay) => {
     /**
      * @type {any}
      */
     let timer = null;
+    // @ts-ignore
     return (...args) => {
         if (timer) {
             clearTimeout(timer);
