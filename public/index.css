@@ -21,6 +21,7 @@ body {
 }
 
 #wall-container {
+    position: relative;
     flex: 1;
     margin: 1em;
     overflow: hidden;
@@ -62,6 +63,14 @@ body {
 
 .rect .pixel {
     border-radius: 10%;
+}
+
+#wall-mask {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
 }
 
 #toolbar {

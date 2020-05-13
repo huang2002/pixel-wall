@@ -29,7 +29,7 @@ let w0 = 0;
 /**
  * @param {HTMLElement} target
  */
-const checkToggleTarget = target => {
+const toggleTarget = target => {
 
     if (lastTarget === target) {
         return;
@@ -53,6 +53,35 @@ const checkToggleTarget = target => {
 
 };
 
+/**
+ * @param {number} x
+ * @param {number} y
+ */
+const checkTarget = (x, y) => {
+    if (x < x0 || y < y0) {
+        return;
+    }
+    const i = Math.floor((x - x0) / w0);
+    const j = Math.floor((y - y0) / w0);
+    if (
+        i >= currentColumns ||
+        j >= currentRows ||
+        (
+            ((x - x0 - (i + .5) * w0) ** 2 +
+                (y - y0 - (j + .5) * w0) ** 2) >
+            (w0 / 2) ** 2
+        )
+    ) {
+        return;
+    }
+    toggleTarget(
+        // @ts-ignore
+        wall.childNodes[j] // row
+            .childNodes[i] // cell
+            .childNodes[0] // pixel
+    );
+};
+
 const wall = (
     h('table', {
         id: 'wall',
@@ -69,91 +98,95 @@ export const setBackgroundColor = color => {
 
 setBackgroundColor('#BBBBBB'); // init
 
+const touchListeners = {
+    /**
+     * @param {TouchEvent} event
+     */
+    touchstart(event) {
+        isPressing = true;
+        const point = event.changedTouches[0];
+        checkTarget(point.clientX, point.clientY);
+    },
+    /**
+     * @param {TouchEvent} event
+     */
+    _touchmove(event) {
+        event.preventDefault();
+        if (!isPressing) {
+            return;
+        }
+        const point = event.changedTouches[0];
+        checkTarget(point.clientX, point.clientY);
+    },
+    touchend() {
+        isPressing = false;
+        lastTarget = null;
+    },
+};
+
+const mouseListeners = {
+    /**
+     * @param {MouseEvent} event
+     */
+    _mousedown(event) {
+        event.preventDefault();
+        isPressing = true;
+        checkTarget(event.clientX, event.clientY);
+    },
+    /**
+     * @param {MouseEvent} event
+     */
+    mousemove(event) {
+        if (!isPressing) {
+            return;
+        }
+        checkTarget(event.clientX, event.clientY);
+    },
+    mouseup() {
+        isPressing = false;
+        lastTarget = null;
+    },
+    mouseleave() {
+        isPressing = false;
+        lastTarget = null;
+    },
+};
+
 export const wallContainer = (
     h('main', {
         id: 'wall-container',
-        listeners: (
-            navigator.maxTouchPoints // > 0
-                ?
-                {
+        listeners: {
+            /**
+             * @param {MouseEvent} event
+             */
+            click(event) {
+                /**
+                 * @type {HTMLElement}
+                 */
+                // @ts-ignore
+                const { target } = event;
+                if (target.getAttribute('class') === PIXEL_CLASS) {
+                    toggleTarget(target);
                     /**
-                     * @param {TouchEvent} event
+                     * Click events should only be triggered
+                     * by keyboard presses, so there's no need
+                     * to prevent the same target from being
+                     * toggled too quickly
                      */
-                    touchstart(event) {
-                        isPressing = true;
-                        // @ts-ignore
-                        checkToggleTarget(event.target);
-                    },
-                    /**
-                     * @param {TouchEvent} event
-                     */
-                    _touchmove(event) {
-                        event.preventDefault();
-                        if (!isPressing) {
-                            return;
-                        }
-                        /**
-                         * HACK: touch event targets are
-                         * fixed, so a simple target
-                         * detection is implemented here
-                         */
-                        const point = event.changedTouches[0];
-                        const { clientX: x, clientY: y } = point;
-                        if (x < x0 || y < y0) {
-                            return;
-                        }
-                        const i = Math.floor((x - x0) / w0);
-                        const j = Math.floor((y - y0) / w0);
-                        if (
-                            i >= currentColumns ||
-                            j >= currentRows ||
-                            (
-                                ((x - x0 - (i + .5) * w0) ** 2 +
-                                    (y - y0 - (j + .5) * w0) ** 2) >
-                                (w0 / 2) ** 2
-                            )
-                        ) {
-                            return;
-                        }
-                        checkToggleTarget(
-                            // @ts-ignore
-                            wall.childNodes[j] // row
-                                .childNodes[i] // cell
-                                .childNodes[0] // pixel
-                        );
-                    },
-                    touchend() {
-                        isPressing = false;
-                        lastTarget = null;
-                    },
-                } :
-                {
-                    /**
-                     * @param {MouseEvent} event
-                     */
-                    mousedown(event) {
-                        isPressing = true;
-                        // @ts-ignore
-                        checkToggleTarget(event.target);
-                    },
-                    /**
-                     * @param {MouseEvent} event
-                     */
-                    mousemove(event) {
-                        if (!isPressing) {
-                            return;
-                        }
-                        // @ts-ignore
-                        checkToggleTarget(event.target);
-                    },
-                    mouseup() {
-                        isPressing = false;
-                        lastTarget = null;
-                    },
+                    lastTarget = null;
                 }
-        ),
+            }
+        },
     }, [
-        wall
+        wall,
+        h('div', {
+            id: 'wall-mask',
+            listeners: (
+                navigator.maxTouchPoints
+                    ? touchListeners
+                    : mouseListeners
+            ),
+        }),
     ])
 );
 
@@ -276,7 +309,7 @@ window.addEventListener('resize', () => {
 /**
  * @param {number} columns
  */
-export const setWallWidth = throttle(columns => {
+const _setWallWidth = columns => {
 
     if (currentColumns < columns) {
         for (let i = 0; i < currentRows; i++) {
@@ -299,12 +332,14 @@ export const setWallWidth = throttle(columns => {
     currentColumns = columns;
     adjustWallStyle();
 
-}, 500);
+};
+
+export const setWallWidth = throttle(_setWallWidth, 500);
 
 /**
  * @param {number} rows
  */
-export const setWallHeight = throttle(rows => {
+const _setWallHeight = rows => {
 
     if (currentRows < rows) {
         const rowTemplate = { length: currentColumns };
@@ -328,9 +363,11 @@ export const setWallHeight = throttle(rows => {
     currentRows = rows;
     adjustWallStyle();
 
-}, 500);
+};
+
+export const setWallHeight = throttle(_setWallHeight, 500);
 
 setTimeout(() => { // wait until DOM is ready
-    setWallHeight(DEFAULT_HEIGHT); // init height
-    setWallWidth(DEFAULT_WIDTH); // init width
+    _setWallHeight(DEFAULT_HEIGHT); // init height
+    _setWallWidth(DEFAULT_WIDTH); // init width
 });
