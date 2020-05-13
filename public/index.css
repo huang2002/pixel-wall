@@ -93,9 +93,9 @@ body {
     top: 0;
     width: 100%;
     height: 100%;
-    color: #DDD;
+    color: #444;
     overflow: auto;
-    background-color: rgba(0, 0, 0, .5);
+    background-color: rgba(255, 255, 255, .2);
     backdrop-filter: blur(5px);
 }
 
@@ -104,8 +104,8 @@ body {
     margin: 1em auto;
     padding: .8em 0;
     text-align: center;
-    background-color: rgba(0, 0, 0, .6);
-    border: solid 1px #888;
+    background-color: rgba(255, 255, 255, .8);
+    border: solid 1px #555;
     border-radius: 6px;
     box-shadow: 0 5px 5px rgba(0, 0, 0, .5);
 }
@@ -123,11 +123,11 @@ body {
     display: inline-block;
     width: 6em;
     text-align: center;
-    outline: none;
 }
 
 .settings-input[type='number'] {
     border-bottom: solid 1px currentColor;
+    outline: none;
 }
 
 .settings-input:invalid {
@@ -140,9 +140,10 @@ body {
     border: solid 1px currentColor;
     border-radius: 5px;
     outline: none;
+    user-select: none;
 }
 
 .settings-input:focus,
 .settings-button:focus {
-    color: #FFF;
+    color: #000;
 }
