@@ -8,7 +8,7 @@ const PIXEL_CLASS = 'pixel';
 const COLOR_KEY = 'data-color';
 
 export const DEFAULT_SECONDARY_COLOR = '#CCCCCC';
-export const DEFAULT_PRIMARY_COLOR = '#CC1144';
+export const DEFAULT_PRIMARY_COLOR = '#CC1155';
 
 export const DEFAULT_WIDTH = 16;
 export const DEFAULT_HEIGHT = 16;
